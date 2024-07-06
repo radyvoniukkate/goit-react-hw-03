@@ -1,13 +1,25 @@
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import PropTypes from "prop-types";
+import * as Yup from "yup";
 import styles from "./ContactForm.module.css";
 
 const ContactForm = ({ onAddContact }) => {
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(3, "Must be at least 3 characters")
+      .max(50, "Must be less than 50 characters")
+      .required("Required"),
+    number: Yup.string()
+      .min(3, "Must be at least 3 characters")
+      .max(50, "Must be less than 50 characters")
+      .required("Required"),
+  });
 
   return (
     <div>
       <Formik
         initialValues={{ name: "", number: "" }}
+        validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           onAddContact(values.name, values.number);
           resetForm();
@@ -23,6 +35,7 @@ const ContactForm = ({ onAddContact }) => {
             id="nameField"
             className={styles.input}
           />
+          <ErrorMessage name="name" component="div" className={styles.error} />
 
           <label htmlFor="phoneField" className={styles.label}>
             Number
@@ -33,6 +46,12 @@ const ContactForm = ({ onAddContact }) => {
             id="phoneField"
             className={styles.input}
           />
+          <ErrorMessage
+            name="number"
+            component="div"
+            className={styles.error}
+          />
+
           <button type="submit" className={styles.button}>
             Add contact
           </button>
